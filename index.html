@@ -249,6 +249,7 @@
     .guide-photo-credit{position:absolute;bottom:14px;left:15px;z-index:2;background:rgba(255,250,242,.9);backdrop-filter:blur(8px);border:1px solid rgba(255,250,242,.3);color:#55382a;border-radius:99px;padding:3px 12px;font-size:11px;letter-spacing:.06em;font-weight:750}
     @media(max-width:740px){.guide-photo{height:250px;margin:-7px -7px 20px}}
   </style>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
   <div class="top-note">11/14 前報名享 <b>早鳥 NT$1,280</b>　·　兩人同行 NT$2,800 不限早鳥</div>
@@ -401,7 +402,7 @@
           <div class="signup-info"><span><strong>日期</strong> 2026 / 11 / 21（六）</span><span><strong>時間</strong> 13:30–15:30</span><span><strong>地點</strong> 台北（報名後通知）</span><span><strong>人數</strong> 12 位小班制</span><span><strong>主辦合作</strong> 順流人生學苑 howsoon666 × 鑠咖啡 Soul Coffee</span></div>
         </div>
         <div class="form-card">
-          <h3 class="serif">填寫報名意向</h3><p class="sub">選擇參加方式，先整理你的報名資料。</p>
+          <h3 class="serif">填寫報名意向</h3><p class="sub">選擇參加方式並填寫資料；需用 LINE 登入並加入官方帳號，報名成功後會收到確認訊息。</p>
           <form id="signupForm" novalidate>
             <div class="plan-grid" role="radiogroup" aria-label="參加方案">
               <label class="plan-option"><input type="radio" name="plan" value="single" checked><span class="plan-body"><span>自己來・單人</span><b id="singlePlanPrice">NT$1,280</b></span></label>
@@ -413,12 +414,13 @@
             </div>
             <label class="field"><span>電子信箱（選填）</span><input id="contactEmail" name="email" type="email" autocomplete="email" placeholder="name@example.com" maxlength="100"></label>
             <label class="field"><span>想說的話（選填）</span><textarea id="contactNote" name="note" placeholder="例如：我第一次接觸手沖／想跟朋友一起來，或其他想讓我們知道的事" maxlength="300"></textarea></label>
-            <label class="checkline"><input id="privacyOk" type="checkbox" required><span>我同意將以上資料用於本次活動的報名聯繫，並理解尚須由主辦單位確認名額與付款方式。</span></label>
+            <label class="checkline"><input id="privacyOk" type="checkbox" required><span>我同意將以上資料用於本次活動的報名聯繫，並理解報名成功後，付款方式與行前資訊將由主辦單位透過順流人生學苑官方 LINE 通知。</span></label>
             <div class="order-summary"><span>目前選擇方案<br><b id="orderPlanLabel">單人早鳥</b></span><strong id="orderTotal">NT$1,280</strong></div>
-            <button id="submitBtn" class="btn btn-burgundy" type="submit">整理我的報名資料 ↗</button>
-            <p class="form-hint" id="formHint">目前為網站展示版，尚未串接主辦單位的正式報名系統；送出後會產生可複製的報名訊息，<strong>不代表名額已預留</strong>。</p>
+            <button id="submitBtn" class="btn btn-burgundy" type="submit">用 LINE 登入並報名 ↗</button>
+            <p class="form-hint" id="formHint">送出前會請你用 LINE 登入，並加入「順流人生學苑」官方帳號；報名成功後，官方帳號會立刻傳確認訊息給你。<span id="seatsLeft"></span></p>
           </form>
-          <div class="form-result" id="formResult" role="status" aria-live="polite"><h4 id="resultHeading">報名資料已整理</h4><p id="resultHint">目前尚未自動送出。請複製下列資訊並傳給活動主辦方，待主辦單位確認後才算完成報名。</p><pre id="resultText"></pre><button class="btn btn-outline" id="copyResult" type="button">複製報名訊息</button></div>
+          <div class="form-result" id="friendGate" role="status" aria-live="polite"><h4>還差一步：加入官方帳號</h4><p>報名確認與後續通知，都會透過「順流人生學苑」官方 LINE 傳給你。請先加入好友，再按「我已加入，繼續報名」。</p><a class="btn btn-burgundy" id="addFriendBtn" href="#" target="_blank" rel="noopener">加入官方帳號</a> <button class="btn btn-outline" id="recheckBtn" type="button">我已加入，繼續報名</button></div>
+          <div class="form-result" id="formResult" role="status" aria-live="polite"><h4 id="resultHeading">報名成功</h4><p id="resultHint"></p><pre id="resultText"></pre></div>
         </div>
       </div>
     </section>
@@ -436,9 +438,9 @@
   <div class="sticky-signup"><div><small id="mobilePriceLabel">單人早鳥價・至 11/14</small><strong id="mobilePrice">NT$1,280</strong></div><a class="btn btn-burgundy" href="#registration">立即報名 ↗</a></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script>
-    // 正式上線前設定此網址，例如主辦方使用的可接收 JSON POST 的報名 API。
-    // 留空時：本站僅整理報名意向，訪客可複製報名訊息，不會把個資傳送到任何伺服器。
-    const REGISTRATION_ENDPOINT = '';
+    // LINE 設定（皆非機密）：LIFF ID 於 LINE Developers 建立；OA_ADD_URL 為官方帳號加好友連結
+    const LIFF_ID = '2010923355-Vq2DkrZY';
+    const OA_ADD_URL = 'https://line.me/R/ti/p/@821zhlun';
     const EVENT_DATE = '2026-11-21';
     const EARLY_END = '2026-11-14';
     function taipeiDate(){
@@ -452,7 +454,8 @@
     const $=id=>document.getElementById(id);
     const form=$('signupForm');
     const result=$('formResult');
-    let lastMessage='';
+    const gate=$('friendGate');
+    const DRAFT_KEY='coffee_signup_draft';
     function updatePrices(){
       $('singlePlanPrice').textContent=money(singlePrice);
       $('orderPlanLabel').textContent=(form.elements.plan.value==='single')?(isEarly?'單人早鳥':'單人原價'):'兩人同行';
@@ -466,55 +469,75 @@
     form.querySelectorAll('[name="plan"]').forEach(r=>r.addEventListener('change',updatePrices));updatePrices();
     let toastTimer;
     function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3200)}
-    async function copyMessage(){
-      try{await navigator.clipboard.writeText(lastMessage);toast('已複製報名資料');}
-      catch(e){
-        const t=document.createElement('textarea');t.value=lastMessage;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();toast('報名資料已複製');
-      }
+
+    // 剩餘名額
+    let seatsLeft=null;
+    fetch('/api/status').then(r=>r.ok?r.json():null).then(d=>{
+      if(!d)return;seatsLeft=d.left;
+      $('seatsLeft').textContent=d.left>0?'　目前剩餘名額：'+d.left+' 位。':'　本場名額已額滿。';
+      if(d.left<=0){$('submitBtn').disabled=true;$('submitBtn').textContent='名額已額滿';}
+    }).catch(()=>{});
+
+    function saveDraft(){try{sessionStorage.setItem(DRAFT_KEY,JSON.stringify({plan:form.elements.plan.value,name:$('contactName').value,phone:$('contactPhone').value,email:$('contactEmail').value,note:$('contactNote').value,go:1}))}catch(e){}}
+    function loadDraft(){try{const d=JSON.parse(sessionStorage.getItem(DRAFT_KEY)||'null');if(!d)return null;
+      form.querySelector('[name="plan"][value="'+d.plan+'"]').checked=true;$('contactName').value=d.name||'';$('contactPhone').value=d.phone||'';$('contactEmail').value=d.email||'';$('contactNote').value=d.note||'';$('privacyOk').checked=true;updatePrices();return d}catch(e){return null}}
+    function clearDraft(){try{sessionStorage.removeItem(DRAFT_KEY)}catch(e){}}
+
+    let liffReady=false;
+    async function initLiff(){
+      if(!LIFF_ID||typeof liff==='undefined')return false;
+      try{await liff.init({liffId:LIFF_ID});liffReady=true;return true}catch(err){console.error('LIFF init failed',err);return false}
     }
-    $('copyResult').addEventListener('click',copyMessage);
-    form.addEventListener('submit',async (e)=>{
-      e.preventDefault();
-      if(!form.reportValidity())return;
-      const plan=form.elements.plan.value;
-      const people=plan==='duo'?2:1;
-      const price=plan==='duo'?2800:singlePrice;
-      const name=$('contactName').value.trim(),phone=$('contactPhone').value.trim(),email=$('contactEmail').value.trim(),note=$('contactNote').value.trim();
-      const planText=plan==='duo'?'兩人同行':(isEarly?'單人早鳥':'單人原價');
-      lastMessage=[
-        '【靜心手沖・咖啡覺察體驗｜報名意向】',
-        '日期：2026/11/21（六）13:30–15:30',
-        '地點：台北（報名後通知）',
-        '方案：'+planText+'（'+people+' 位）',
-        '費用：'+money(price),
-        '姓名：'+name,
-        '電話：'+phone,
-        '電子信箱：'+(email||'未填'),
-        '備註：'+(note||'無'),
-        '＊尚待主辦方確認名額及付款方式。'
-      ].join('\n');
-      const payload={event:'靜心手沖・咖啡覺察體驗',event_date:'2026-11-21',time:'13:30–15:30',name,phone,email,note,plan:planText,attendees:people,total_price_twd:price,submitted_at:new Date().toISOString()};
-      $('resultText').textContent=lastMessage;
-      if(REGISTRATION_ENDPOINT){
-        const button=$('submitBtn');button.disabled=true;button.textContent='送出中…';
-        try{
-          const resp=await fetch(REGISTRATION_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-          if(!resp.ok)throw new Error('network');
-          $('resultHeading').textContent='已收到您的報名意向';
-          $('resultHint').textContent='報名意向已送出，仍需主辦單位確認名額與付款方式；下方也保留一份資料供你備查。';
-          toast('報名意向已送出');
-        }catch(err){
-          $('resultHeading').textContent='目前無法自動送出';
-          $('resultHint').textContent='收件系統目前無法使用，請複製報名資料並與主辦單位聯繫。';
-          toast('送出失敗，請複製報名資料');
-        }finally{button.disabled=false;button.textContent='整理我的報名資料 ↗';}
-      }else{
-        $('resultHeading').textContent='報名資料已整理（尚未送出）';
-        $('resultHint').textContent='這是網站展示版，尚未接上正式收件系統。請先複製報名資訊並傳給主辦單位；資料尚未送出，名額也尚未預留。';
-        toast('報名資料已整理，尚未送出');
-      }
-      result.classList.add('active');result.scrollIntoView({behavior:'smooth',block:'nearest'});
-    });
+
+    function showGate(show){
+      if(show&&OA_ADD_URL)$('addFriendBtn').href=OA_ADD_URL;
+      gate.classList.toggle('active',show);
+      if(show)gate.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+
+    async function submitRegistration(){
+      const button=$('submitBtn');
+      if(!liffReady){toast('LINE 報名功能尚未啟用，請稍後再試');return}
+      if(!liff.isLoggedIn()){saveDraft();liff.login({redirectUri:window.location.href.split('#')[0].split('?')[0]});return}
+      button.disabled=true;button.textContent='檢查中…';
+      try{
+        let friend=true;
+        try{friend=(await liff.getFriendship()).friendFlag}catch(e){/* 查不到就交給伺服器判斷 */}
+        if(!friend){showGate(true);return}
+        showGate(false);
+        button.textContent='送出中…';
+        const resp=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+          plan:form.elements.plan.value,name:$('contactName').value.trim(),phone:$('contactPhone').value.trim(),email:$('contactEmail').value.trim(),note:$('contactNote').value.trim(),lineIdToken:liff.getIDToken()
+        })});
+        const data=await resp.json().catch(()=>({}));
+        if(resp.ok){
+          clearDraft();
+          const dup=data.duplicate;
+          $('resultHeading').textContent=dup?'你已經報名過了':'報名成功 ✅';
+          $('resultHint').textContent=dup?'這個 LINE 帳號已有報名紀錄，確認訊息請看順流人生學苑官方帳號。':'確認訊息已傳到你的 LINE（順流人生學苑官方帳號），付款方式與行前資訊會再由主辦單位通知。';
+          $('resultText').textContent=dup?'':['方案：'+data.plan+'（'+data.people+' 位）','費用：'+money(data.price),'日期：2026/11/21（六）13:30–15:30','地點：台北（詳細地址將於活動前通知）'].join('\n');
+          result.classList.add('active');result.scrollIntoView({behavior:'smooth',block:'nearest'});
+          toast(dup?'你已報名過':'報名成功');
+          button.textContent='已完成報名';
+          return;
+        }
+        if(data.error==='NOT_FRIEND'){showGate(true)}
+        else if(data.error==='FULL'){toast('名額不足，無法報名');button.textContent='名額已額滿'}
+        else if(data.error==='INVALID_LINE_LOGIN'){toast('LINE 登入已失效，請重新登入');try{liff.logout()}catch(e){}}
+        else if(data.error==='INVALID_INPUT'){toast('資料格式有誤，請檢查姓名、電話與信箱')}
+        else{toast('送出失敗，請稍後再試或聯繫主辦單位')}
+      }catch(err){toast('網路異常，請稍後再試')}
+      finally{if(!$('submitBtn').textContent.startsWith('已')&&!$('submitBtn').textContent.startsWith('名額')){$('submitBtn').disabled=false;$('submitBtn').textContent='用 LINE 登入並報名 ↗'}else{$('submitBtn').disabled=true}}
+    }
+    form.addEventListener('submit',e=>{e.preventDefault();if(!form.reportValidity())return;submitRegistration()});
+    $('recheckBtn').addEventListener('click',()=>{if(form.reportValidity())submitRegistration()});
+
+    // 登入導轉回來：還原表單，登入完成就接著檢查好友並送出
+    (async()=>{
+      const ok=await initLiff();
+      const d=loadDraft();
+      if(ok&&d&&d.go&&liff.isLoggedIn()){document.getElementById('registration').scrollIntoView();submitRegistration()}
+    })();
   </script>
 </body>
 </html>
