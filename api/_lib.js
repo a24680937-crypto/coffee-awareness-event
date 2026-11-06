@@ -12,9 +12,9 @@ function taipeiToday() {
 
 // 價格一律由伺服器依日期決定，不信任前端傳來的金額
 function priceFor(plan) {
-  if (plan === 'duo') return { people: 2, price: 2800, label: '兩人同行' };
+  if (plan === 'duo') return { people: 2, price: 2800, label: '兩人同行', early: false };
   const early = taipeiToday() <= EARLY_END;
-  return { people: 1, price: early ? 1280 : 1680, label: early ? '單人早鳥' : '單人原價' };
+  return { people: 1, price: early ? 1280 : 1680, label: early ? '單人早鳥' : '單人原價', early };
 }
 
 function text(v, max, required) {

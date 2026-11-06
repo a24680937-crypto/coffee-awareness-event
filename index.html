@@ -402,7 +402,7 @@
           <div class="signup-info"><span><strong>日期</strong> 2026 / 11 / 21（六）</span><span><strong>時間</strong> 13:30–15:30</span><span><strong>地點</strong> 台北（報名後通知）</span><span><strong>人數</strong> 12 位小班制</span><span><strong>主辦合作</strong> 順流人生學苑 howsoon666 × 鑠咖啡 Soul Coffee</span></div>
         </div>
         <div class="form-card">
-          <h3 class="serif">填寫報名意向</h3><p class="sub">選擇參加方式並填寫資料；需用 LINE 登入並加入官方帳號，報名成功後會收到確認訊息。</p>
+          <h3 class="serif">填寫報名意向</h3><p class="sub">選擇參加方式並填寫資料；需用 LINE 登入並加入官方帳號，送出後會收到匯款資訊。</p>
           <form id="signupForm" novalidate>
             <div class="plan-grid" role="radiogroup" aria-label="參加方案">
               <label class="plan-option"><input type="radio" name="plan" value="single" checked><span class="plan-body"><span>自己來・單人</span><b id="singlePlanPrice">NT$1,280</b></span></label>
@@ -414,10 +414,10 @@
             </div>
             <label class="field"><span>電子信箱（選填）</span><input id="contactEmail" name="email" type="email" autocomplete="email" placeholder="name@example.com" maxlength="100"></label>
             <label class="field"><span>想說的話（選填）</span><textarea id="contactNote" name="note" placeholder="例如：我第一次接觸手沖／想跟朋友一起來，或其他想讓我們知道的事" maxlength="300"></textarea></label>
-            <label class="checkline"><input id="privacyOk" type="checkbox" required><span>我同意將以上資料用於本次活動的報名聯繫，並理解報名成功後，付款方式與行前資訊將由主辦單位透過順流人生學苑官方 LINE 通知。</span></label>
+            <label class="checkline"><input id="privacyOk" type="checkbox" required><span>我同意將以上資料用於本次活動的報名聯繫，並理解送出後名額會先為我保留，完成匯款後報名才正式成立；匯款資訊將透過順流人生學苑官方 LINE 傳送給我。</span></label>
             <div class="order-summary"><span>目前選擇方案<br><b id="orderPlanLabel">單人早鳥</b></span><strong id="orderTotal">NT$1,280</strong></div>
             <button id="submitBtn" class="btn btn-burgundy" type="submit">用 LINE 登入並報名 ↗</button>
-            <p class="form-hint" id="formHint">送出前會請你用 LINE 登入，並加入「順流人生學苑」官方帳號；報名成功後，官方帳號會立刻傳確認訊息給你。<span id="seatsLeft"></span></p>
+            <p class="form-hint" id="formHint">送出前會請你用 LINE 登入，並加入「順流人生學苑」官方帳號；送出後，官方帳號會立刻傳匯款資訊給你，完成匯款後報名才正式成立。<span id="seatsLeft"></span></p>
           </form>
           <div class="form-result" id="friendGate" role="status" aria-live="polite"><h4>還差一步：加入官方帳號</h4><p>報名確認與後續通知，都會透過「順流人生學苑」官方 LINE 傳給你。請先加入好友，再按「我已加入，繼續報名」。</p><a class="btn btn-burgundy" id="addFriendBtn" href="#" target="_blank" rel="noopener">加入官方帳號</a> <button class="btn btn-outline" id="recheckBtn" type="button">我已加入，繼續報名</button></div>
           <div class="form-result" id="formResult" role="status" aria-live="polite"><h4 id="resultHeading">報名成功</h4><p id="resultHint"></p><pre id="resultText"></pre></div>
@@ -513,8 +513,8 @@
         if(resp.ok){
           clearDraft();
           const dup=data.duplicate;
-          $('resultHeading').textContent=dup?'你已經報名過了':'報名成功 ✅';
-          $('resultHint').textContent=dup?'這個 LINE 帳號已有報名紀錄，確認訊息請看順流人生學苑官方帳號。':'確認訊息已傳到你的 LINE（順流人生學苑官方帳號），付款方式與行前資訊會再由主辦單位通知。';
+          $('resultHeading').textContent=dup?'你已經報名過了':'已收到報名，名額已為你保留 ✅';
+          $('resultHint').textContent=dup?'這個 LINE 帳號已有報名紀錄，匯款資訊請看順流人生學苑官方帳號傳給你的訊息。':'匯款資訊已傳到你的 LINE（順流人生學苑官方帳號）。完成匯款並回覆帳號末五碼後，報名才正式成立。';
           $('resultText').textContent=dup?'':['方案：'+data.plan+'（'+data.people+' 位）','費用：'+money(data.price),'日期：2026/11/21（六）13:30–15:30','地點：台北（詳細地址將於活動前通知）'].join('\n');
           result.classList.add('active');result.scrollIntoView({behavior:'smooth',block:'nearest'});
           toast(dup?'你已報名過':'報名成功');
